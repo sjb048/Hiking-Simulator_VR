@@ -56,15 +56,46 @@ public:
      * @return Current position as a glm::vec3.
      */
     glm::vec3 getPosition() const;
-
+    void setScales(float scale);
     /**
      * @brief Sets the horizontal and vertical scaling factors.
      * @param hScale Horizontal scale.
      * @param vScale Vertical scale.
      */
     void setScales(float hScale, float vScale);
+    /**
+         * @brief Sets the terrain reference for the hiker.
+         * @param terrain Pointer to the terrain object.
+    */
+    void setTerrain(const Terrain* terrain);
+    /**
+         * @brief Gets the path points.
+         * @return Reference to the vector of path points.
+         */
+    const std::vector<glm::vec3>& getPathPoints() const;
+    /**
+       * @brief Sets the hiker's speed.
+       * @param newSpeed The new speed value.
+       */
+    void setSpeed(float newSpeed);
+    void validatePath(const Terrain& terrain);
+    /**
+         * @brief Moves the hiker forward along the path.
+         * @param deltaTime Time elapsed since the last update.
+         */
+    void moveForward(float deltaTime);
+
+        /**
+         * @brief Moves the hiker backward along the path.
+         * @param deltaTime Time elapsed since the last update.
+         */
+    void moveBackward(float deltaTime);
 
 private:
+    bool movingForward;   
+    // References
+    const Terrain* terrainRef;    ///< Pointer to the terrain object.
+
     std::string pathFile;               ///< Path to the hiker's path data file.
     std::vector<glm::vec3> pathPoints;  ///< Vector of path points.
     GLuint pathVAO, pathVBO;            ///< OpenGL objects for rendering the path.
@@ -72,14 +103,23 @@ private:
     float maxSlopeAngle;                ///< Maximum slope angle the hiker can traverse.
     float progress;                     ///< Progress between two path points.
     size_t currentPathIndex;            ///< Current index in the pathPoints vector.
-
+    
+    std::vector<float> segmentDistances;  ///< Cumulative distances along the path.
+    float totalPathLength;                ///< Total length of the path.
+    float currentDistance;                ///< Current distance along the path.
+    int currentSegmentIndex;
+    
+    float speed;
+    
     float horizontalScale; ///< Horizontal scaling factor to align with terrain.
     float heightScale;     ///< Vertical scaling factor to align with terrain.
-
+    // Hiker state
+    glm::vec3 position;
     /**
      * @brief Sets up the VAO and VBO for the hiker's path.
      */
     void setupPathVAO();
+    void calculateSegmentDistances();
 };
 
 #endif // HIKER_H
